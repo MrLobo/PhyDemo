@@ -158,19 +158,21 @@ struct poly_edge
 	int  i0,i1;
 	int  f0,f1;
 };
+
 struct Bbox  
 {
-    vector3D center;
-    matrix3D orientation;
-    vector3D size;
-    real radio;
+  vector3D center;
+  matrix3D orientation;
+  vector3D size;
+  real radio;
 
-    vector3D getXaxis()const{ return vector3D( orientation(0,0),orientation(1,0),orientation(2,0));}
-    vector3D getYaxis()const{ return vector3D( orientation(0,1),orientation(1,1),orientation(2,1));}
-    vector3D getZaxis()const{ return vector3D( orientation(0,2),orientation(1,2),orientation(2,2));}
+  vector3D getXaxis()const{ return vector3D( orientation(0,0),orientation(1,0),orientation(2,0));}
+  vector3D getYaxis()const{ return vector3D( orientation(0,1),orientation(1,1),orientation(2,1));}
+  vector3D getZaxis()const{ return vector3D( orientation(0,2),orientation(1,2),orientation(2,2));}
 
-    Bbox(){};
-	Bbox(matrix3D O,vector3D p,vector3D s)
+  Bbox() {};
+
+	Bbox(const matrix3D& O, const vector3D& p, const vector3D& s)
 	{
 		for(int i=0; i < 3; i++)
 			for(int j=0; j < 3;j++)
@@ -181,9 +183,9 @@ struct Bbox
 	}
 
 };
+
 bool boxTestBox(const Bbox& p, const Bbox& q);
-bool boxFindBox(const Bbox& p, const Bbox& q, 
-	vector3D* col_point, vector3D* col_normal, int& nPoints);
+bool boxFindBox(const Bbox& p, const Bbox& q, vector3D* col_point, vector3D* col_normal, int& nPoints);
 
 /*----------------------------------------------------------------------------
 

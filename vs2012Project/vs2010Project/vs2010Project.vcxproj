@@ -93,6 +93,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\GEO3D.H" />
     <ClInclude Include="..\..\PHYSICS3D.H" />
+    <ClInclude Include="..\..\RIGIDBODY.H" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\PHYSICS.ICO" />

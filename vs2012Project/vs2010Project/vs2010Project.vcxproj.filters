@@ -35,6 +35,9 @@
     <ClInclude Include="..\..\PHYSICS3D.H">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\RIGIDBODY.H">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\PHYSICS.ICO">

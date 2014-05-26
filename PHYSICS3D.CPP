@@ -69,10 +69,10 @@ void dynamic_world::BuildBodies( void )
 {
 	string String;
 
-  for(int i = 0;i < NumberOfBodies;i++)
+  for(int i = 0; i < NumberOfBodies; i++)
   {
       // initialize rigid bodies by randomly generating boxes
-      rigid_body &Body = bodies[i];
+      rigid_body& Body = bodies[i];
 
 		  real dX = GenerateUnitRandomReal()*1.0f;
 		  real dY = GenerateUnitRandomReal()*1.0f;
@@ -82,17 +82,16 @@ void dynamic_world::BuildBodies( void )
       dY = VALUE_MAX(dY,0.4f);
       dZ = VALUE_MAX(dZ,0.4f);
 			
-		  Body.size=vector3D(dX,dY,dZ);
+      
+      Body.shape = new BoxShape( vector3D(dX,dY,dZ) );
 
       real Density = r(0.4);
-      real Mass = r(8)*Density*dX*dY*dZ;
-      assert(Mass > r(0));
+      real Mass = r(8) * Density * Body.shape->calculateVolume();
+      assert( Mass > r(0) );
 
       //Body.OneOverMass = r(1)/Mass;
 		  Body.setMass(Mass);
-      Body.InverseBodyInertiaTensor(0,0) = r(3)/(Mass*(dY*dY+dZ*dZ));
-      Body.InverseBodyInertiaTensor(1,1) = r(3)/(Mass*(dX*dX+dZ*dZ));
-      Body.InverseBodyInertiaTensor(2,2) = r(3)/(Mass*(dX*dX+dY*dY));
+      Body.InverseBodyInertiaTensor = Body.shape->calculateInverseBodyInertiaTensor( Mass );
 
       Body.restitution = r(0.5f); 
 		  Body.friction = r(0.5f);
@@ -317,20 +316,20 @@ void dynamic_world::Integrate( real DeltaTime )
 
 dynamic_world::collision_state dynamic_world::CheckForInterCollisions( int state )
 {
-    for(int BodyIndex1 = 0;(BodyIndex1 < NumberOfBodies) ;BodyIndex1++)
+    for( int BodyIndex1 = 0;(BodyIndex1 < NumberOfBodies) ;BodyIndex1++ )
     {
-        rigid_body &Body1 = bodies[BodyIndex1];
-        rigid_body::DynamicState &dynamicState1 = Body1.dynamicState[state];
-		    Bbox bbox1(dynamicState1.Orientation,dynamicState1.CMPosition,Body1.size);
 
-	    for(int BodyIndex2 = BodyIndex1 + 1 ;(BodyIndex2 < NumberOfBodies) ;BodyIndex2++)
+      rigid_body &Body1 = bodies[BodyIndex1];
+      rigid_body::DynamicState &dynamicState1 = Body1.dynamicState[state];
+		  Bbox bbox1( dynamicState1.Orientation, dynamicState1.CMPosition, Body1.shape->getSize() );
+
+	    for( int BodyIndex2 = BodyIndex1 + 1 ; (BodyIndex2 < NumberOfBodies); BodyIndex2++ )
 		  {
 			  rigid_body &Body2 = bodies[BodyIndex2];
-			  rigid_body::DynamicState &dynamicState2 =
-					  Body2.dynamicState[state];
-			  Bbox bbox2(dynamicState2.Orientation,dynamicState2.CMPosition,Body2.size);
+			  rigid_body::DynamicState &dynamicState2 = Body2.dynamicState[state];
+			  Bbox bbox2( dynamicState2.Orientation, dynamicState2.CMPosition, Body2.shape->getSize() );
 
-			  if( boxTestBox(bbox1, bbox2))
+			  if( boxTestBox(bbox1, bbox2) )
 			  {
 				  int nPoints=0;
 				  vector3D col_point[16];
@@ -366,34 +365,30 @@ dynamic_world::collision_state dynamic_world::CheckForWallCollisions( int state 
 {
     float const DepthEpsilon = 0.001f;
 
-
-    for(int BodyIndex = 0;(BodyIndex < NumberOfBodies) ;BodyIndex++)
+    for( int BodyIndex = 0; (BodyIndex < NumberOfBodies); BodyIndex++ )
     {
         rigid_body &Body = bodies[BodyIndex];
-        rigid_body::DynamicState &dynamicState =
-                Body.dynamicState[state];
+        rigid_body::DynamicState &dynamicState = Body.dynamicState[state];
 		    Body.frintionEnabled=true;
 
-        for(int unsigned i= 0;
-            (i < Body.NumberOfBoundingVertices) ;i++)
+        for( unsigned int i = 0; i < Body.NumberOfBoundingVertices; i++)
         {
             vector3D Position = Body.worldBoundingVertices[i];
             vector3D U = Position - dynamicState.CMPosition;
-
             vector3D Velocity = dynamicState.CMVelocity +
                         CrossProduct(dynamicState.AngularVelocity,U);
 
-            for(int WallIndex = 0;(WallIndex < 6);WallIndex++)
+            for( int WallIndex = 0; (WallIndex < 6); WallIndex++ )
             {
-                plane &Wall = walls[WallIndex];
+                plane& Wall = walls[WallIndex];
 
                 real penetration = Dot(Position,Wall.Normal) + Wall.d;
 
-                if(penetration < DepthEpsilon)
+                if( penetration < DepthEpsilon )
                 {
                     real RelativeVelocity = Dot(Wall.Normal,Velocity);
 
-                    if(RelativeVelocity < r(0))
+                    if( RelativeVelocity < r(0) )
                     {
                         CollisionState = Colliding;
 						
@@ -532,7 +527,7 @@ void dynamic_world::ResolveCollisions( int dynamicStateIndex )
 						Dot( normal,CrossProduct( dynamicState2.InverseWorldInertiaTensor*
 						CrossProduct(R2, normal), R2)); 
 					real impn = -((r(1)+restitution)*vn)/(rIrn1+rIrn2);
-		//			real impn = -((r(1)+CoefficientOfRestitution)*vn)/rIrn1;
+		//		real impn = -((r(1)+CoefficientOfRestitution)*vn)/rIrn1;
 					if( impn < Epsilon)
 					{
 						//sticky impulse
@@ -554,40 +549,6 @@ void dynamic_world::ResolveCollisions( int dynamicStateIndex )
 					 //compute affected auxiliary quantities
 					dynamicState2.AngularVelocity = dynamicState2.InverseWorldInertiaTensor *
 						dynamicState2.AngularMomentum;
-
-					if(0)// FrictionActive)// && Body.frintionEnabled)
-					{
-						// apply friction
-			
-						vector3D Velocity1 = dynamicState1.CMVelocity +
-							CrossProduct(dynamicState1.AngularVelocity,R1);
-						vector3D Velocity2 = dynamicState2.CMVelocity +
-							CrossProduct(dynamicState2.AngularVelocity,R2);
-
-						vector3D velocity = Velocity1 - Velocity2;
-
-						vector3D tand = velocity - Dot(velocity,normal)*normal;
-						tand.normalize();
-						{
-							real friction =  (body1.friction+  body2.friction)*.5f;
-							Impulse = friction *(-impn) * tand;
-
-							// apply impulse to primary quantities
-							dynamicState1.CMVelocity += body1.getInvMass() * Impulse;
-							dynamicState1.AngularMomentum += CrossProduct(R1,Impulse);
-    
-							// compute affected auxiliary quantities
-							dynamicState1.AngularVelocity = dynamicState1.InverseWorldInertiaTensor *
-								dynamicState1.AngularMomentum;
-							dynamicState2.CMVelocity -= body2.getInvMass() * Impulse;
-							dynamicState2.AngularMomentum -= CrossProduct(R2,Impulse);
-    
-							// compute affected auxiliary quantities
-							dynamicState2.AngularVelocity = dynamicState2.InverseWorldInertiaTensor *
-								dynamicState2.AngularMomentum;
-						}
-					}
-
 				}
 				int solvedCounter=0;
 				for( int j=0; j < pair->nPoints; j++)

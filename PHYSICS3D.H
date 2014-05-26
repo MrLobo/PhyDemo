@@ -11,47 +11,12 @@
 
 #include "geo3d.h"	
 #include "thinkGL.h"
+#include "RIGIDBODY.H"
 
 struct plane
 {
     vector3D Normal;        
     real d;                 
-};
-
-const int MaxNumberOfBoundingVertices = 50;
-
-struct rigid_body
-{
-	vector3D size;
-  real mass;
-  matrix3D InverseBodyInertiaTensor;
-  real restitution;
-  real friction;	
-	bool frintionEnabled;
-
-  int unsigned NumberOfBoundingVertices;
-  vector3D localBoundingVertices[MaxNumberOfBoundingVertices];
-  vector3D worldBoundingVertices[MaxNumberOfBoundingVertices];
-
-	void setMass(real value){ mass=value; }
-	real getMass(){ return mass;}
-	real getInvMass(){ return (1.0f/mass); }
-
-  struct DynamicState
-  {
-      vector3D CMPosition;
-      matrix3D Orientation;
-
-      vector3D CMVelocity;
-      vector3D AngularMomentum;
-
-      vector3D CMForce;
-      vector3D Torque;
-
-      matrix3D InverseWorldInertiaTensor;
-      vector3D AngularVelocity;
-        
-  } dynamicState[2];
 };
 
 
