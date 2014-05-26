@@ -32,7 +32,7 @@ public:
 
 	bool Init( unsigned int width, unsigned int height);
 	void StoreBox( int index, float* color, float sx,float sy,float sz);
-    void Render( void );
+  void Render( void );
 	void clearView( float zoom,  float height, float angle);
 	void printGLtext(int x, int y, char* String, int size);
 
