@@ -74,74 +74,70 @@ void dynamic_world::BuildBodies( void )
 
     for(int i = 0; i < NumberOfBodies;i++)
     {
-        // initialize rigid bodies by randomly generating boxes
+      
+      // initialize rigid bodies by randomly generating boxes
+      rigid_body &Body = bodies[i];
+		  
+      //if( i%2 == 1 )
 
-        rigid_body &Body = bodies[i];
-		if( i%2 == 1 )
-			Body.shape=SPHERE_SHAPE;		
-		else
-			Body.shape=BOX_SHAPE;
+			 Body.shape=SPHERE_SHAPE;		
+	
+			 //Body.shape=BOX_SHAPE;
+ 
 
-    real dX = GenerateUnitRandomReal()*1.0f;
-		real dY = GenerateUnitRandomReal()*1.0f;
-		real dZ = GenerateUnitRandomReal()*1.0f;
-		dX = VALUE_MAX(dX,0.4f);
-		dY = VALUE_MAX(dY,0.4f);
-		dZ = VALUE_MAX(dZ,0.4f);
+      real dX = GenerateUnitRandomReal()*1.0f;
+		  real dY = GenerateUnitRandomReal()*1.0f;
+		  real dZ = GenerateUnitRandomReal()*1.0f;
+		  dX = VALUE_MAX(dX,0.4f);
+		  dY = VALUE_MAX(dY,0.4f);
+		  dZ = VALUE_MAX(dZ,0.4f);
 
-		if( Body.shape==BOX_SHAPE)
-		{
-			Body.size= vector3D(dX,dY,dZ);
-			Body.radius = sqrt(dX*dX+dY*dY+dZ*dZ);
+		  if( Body.shape==BOX_SHAPE)
+		  {
+			  Body.size= vector3D(dX,dY,dZ);
+			  Body.radius = sqrt(dX*dX+dY*dY+dZ*dZ);
 
-			real Density = r(1.0);
-			real Mass = r(8)*Density*dX*dY*dZ;
-			assert(Mass > r(0));
+			  real Density = r(1.0);
+			  real Mass = r(8)*Density*dX*dY*dZ;
+			  assert(Mass > r(0));
 
-			Body.setMass(Mass);
-			//factor 3 becouse "size" is half of the whole size - porque estamos usando la mitad del lado
-			Body.InverseBodyInertiaTensor(0,0) = r(3)/(Mass*(dY*dY+dZ*dZ));
-			Body.InverseBodyInertiaTensor(1,1) = r(3)/(Mass*(dX*dX+dZ*dZ));
-			Body.InverseBodyInertiaTensor(2,2) = r(3)/(Mass*(dX*dX+dY*dY));
+			  Body.setMass(Mass);
+			  //factor 3 becouse "size" is half of the whole size - porque estamos usando la mitad del lado
+			  Body.InverseBodyInertiaTensor(0,0) = r(3)/(Mass*(dY*dY+dZ*dZ));
+			  Body.InverseBodyInertiaTensor(1,1) = r(3)/(Mass*(dX*dX+dZ*dZ));
+			  Body.InverseBodyInertiaTensor(2,2) = r(3)/(Mass*(dX*dX+dY*dY));
 
-			Body.restitution =restitution;
-			Body.friction = friction;
-			// Body.adynamicStates[0].CMPosition;
-			// assign the body-space bounding volume vertices
+			  Body.restitution =restitution;
+			  Body.friction = friction;
 
-			//Body.NumberOfBoundingVertices = 8;
-			//Body.localBoundingVertices[0] = vector3D( dX, dY, dZ);
-			//Body.localBoundingVertices[1] = vector3D( dX, dY,-dZ);
-			//Body.localBoundingVertices[2] = vector3D( dX,-dY, dZ);
-			//Body.localBoundingVertices[3] = vector3D( dX,-dY,-dZ);
-			//Body.localBoundingVertices[4] = vector3D(-dX, dY, dZ);
-			//Body.localBoundingVertices[5] = vector3D(-dX, dY,-dZ);
-			//Body.localBoundingVertices[6] = vector3D(-dX,-dY, dZ);
-			//Body.localBoundingVertices[7] = vector3D(-dX,-dY,-dZ);
-			Body.color[0]=GenerateUnitRandomReal();
-			Body.color[1]=GenerateUnitRandomReal();
-			Body.color[2]=GenerateUnitRandomReal();
-			currentRender->StoreBox(i, Body.color, dX,dY,dZ);
-		}
-    //TODO: 
-		else if( Body.shape == SPHERE_SHAPE)
-		{
-      Body.size = vector3D(dX,dY,dZ);
-			real radius = sqrt(dX*dX+dY*dY+dZ*dZ);
-      Body.radius = radius;
+			  Body.color[0]=GenerateUnitRandomReal();
+			  Body.color[1]=GenerateUnitRandomReal();
+			  Body.color[2]=GenerateUnitRandomReal();
+			  currentRender->StoreBox(i, Body.color, dX,dY,dZ);
+		  }
+      //TODO: 
+		  else if( Body.shape == SPHERE_SHAPE)
+		  {
+        Body.size = vector3D(dX,dY,dZ);
+			  real radius = sqrt(dX*dX+dY*dY+dZ*dZ);
+        Body.radius = radius;
 
-			real Density = r(1.6f);
-			real Mass = r(8) * Density * 4.f/3.f * PI * radius * radius * radius ;
-			assert(Mass > r(0));
+			  real Density = r(1.6f);
+			  real Mass =  Density * 4.f/3.f * PI * radius * radius * radius ;
+			  assert(Mass > r(0));
 
-      Body.InverseBodyInertiaTensor(0,0) = r(5) / ( r(2) * Mass * radius * radius );
-			Body.InverseBodyInertiaTensor(1,1) = r(5) / ( r(2) * Mass * radius * radius );
-			Body.InverseBodyInertiaTensor(2,2) = r(5) / ( r(2) * Mass * radius * radius );
+        Body.setMass(Mass);
+        Body.InverseBodyInertiaTensor(0,0) = r(5) / ( r(2) * Mass * radius * radius );
+			  Body.InverseBodyInertiaTensor(1,1) = r(5) / ( r(2) * Mass * radius * radius );
+			  Body.InverseBodyInertiaTensor(2,2) = r(5) / ( r(2) * Mass * radius * radius );
 
-      Body.color[0]=GenerateUnitRandomReal();
-			Body.color[1]=GenerateUnitRandomReal();
-			Body.color[2]=GenerateUnitRandomReal();
-		}
+        Body.restitution =restitution;
+			  Body.friction = friction;
+
+        Body.color[0]=GenerateUnitRandomReal();
+			  Body.color[1]=GenerateUnitRandomReal();
+			  Body.color[2]=GenerateUnitRandomReal();
+		  }
    }
 
 }
@@ -152,66 +148,75 @@ void  dynamic_world::IntitilizeBodiesInWorld()
 //	TargetState=1;
     for(int i = 0;i < NumberOfBodies;i++)
     {
-        rigid_body::DynamicState &Source = bodies[i].dynamicState[CurrentState];
-        rigid_body::DynamicState &Target = bodies[i].dynamicState[TargetState];
+      rigid_body::DynamicState &Source = bodies[i].dynamicState[CurrentState];
+      rigid_body::DynamicState &Target = bodies[i].dynamicState[TargetState];
 
-		Source.CMForce = vector3D();
-		Source.Torque = vector3D();
-		Target.CMForce = vector3D();
-		Target.Torque = vector3D();
+		  Source.CMForce = vector3D();
+		  Source.Torque = vector3D();
+		  Target.CMForce = vector3D();
+		  Target.Torque = vector3D();
 
-		//assign random position
-		real px = (GenerateUnitRandomReal()-0.5f)*WorldSize;
-		real py = (GenerateUnitRandomReal()-0.5f)*WorldSize;
-		real pz = (GenerateUnitRandomReal()-0.5f)*WorldSize;
+		  //assign random position
+		  real px = (GenerateUnitRandomReal()-0.5f)*WorldSize;
+		  real py = (GenerateUnitRandomReal()-0.5f)*WorldSize;
+		  real pz = (GenerateUnitRandomReal()-0.5f)*WorldSize;
 
-		//if( i==0)
-		//{
-		//	px = 0.0f;
-		//	py = 0.0f;
-		//	pz = -WorldSize*.45f;
-		//}
-		//else
-		//if( i==1)
-		//{
-		//	px = -0.2f;
-		//	py = -0.2f;
-		//	pz = -WorldSize*.05f;
-		//}	
+ /*     real px = 0.f;
+		  real py = 0.3f;
+		  real pz = 0.f;*/
 
-		vector3D position(px,py,pz);
-		Source.CMPosition=position;
-		Target.CMPosition=position;
+		  //if( i==0)
+		  //{
+		  //	px = 0.0f;
+		  //	py = 0.0f;
+		  //	pz = -WorldSize*.45f;
+		  //}
+		  //else
+		  //if( i==1)
+		  //{
+		  //	px = -0.2f;
+		  //	py = -0.2f;
+		  //	pz = -WorldSize*.05f;
+		  //}	
 
-		//assign random velocities
-		real vx =(GenerateUnitRandomReal()-0.5f)*maxSpeed;
-		real vy =(GenerateUnitRandomReal()-0.5f)*maxSpeed;
-		real vz =(GenerateUnitRandomReal()-0.5f)*maxSpeed;
-		//vx = -5.0f;
-		//vy = -5.0f;
-		//vz = 0.0f;//maxSpeed*.25f;
+		  vector3D position(px,py,pz);
+		  Source.CMPosition=position;
+		  Target.CMPosition=position;
 
-		vector3D velocity(vx,vy,vz);
-		Source.CMVelocity=velocity;
-		Target.CMVelocity=velocity;
+		  //assign random velocities
+		  real vx =(GenerateUnitRandomReal()-0.5f)*maxSpeed;
+		  real vy =(GenerateUnitRandomReal()-0.5f)*maxSpeed;
+		  real vz =(GenerateUnitRandomReal()-0.5f)*maxSpeed;
 
-		vector3D w(0,0,0);
-		Source.AngularMomentum = w;
-		Source.AngularVelocity = w;
-		Target.AngularMomentum = w;
-		Target.AngularVelocity = w;
+    //  real vx = 0.f;
+		  //real vy = 0.f;
+		  //real vz = 0.f;
 
-		Source.Orientation.setIdentity();
-		Target.Orientation.setIdentity();
+		  //vx = -5.0f;
+		  //vy = -5.0f;
+		  //vz = 0.0f;//maxSpeed*.25f;
 
-        Source.InverseWorldInertiaTensor = Source.Orientation *
-                bodies[i].InverseBodyInertiaTensor *
-                Transpose(Source.Orientation);
+		  vector3D velocity(vx,vy,vz);
+		  Source.CMVelocity=velocity;
+		  Target.CMVelocity=velocity;
 
-        Target.InverseWorldInertiaTensor = Target.Orientation *
-                bodies[i].InverseBodyInertiaTensor *
-                Transpose(Target.Orientation);
-	}
+		  vector3D w(0,0,0);
+		  Source.AngularMomentum = w;
+		  Source.AngularVelocity = w;
+		  Target.AngularMomentum = w;
+		  Target.AngularVelocity = w;
+
+		  Source.Orientation.setIdentity();
+		  Target.Orientation.setIdentity();
+
+          Source.InverseWorldInertiaTensor = Source.Orientation *
+                  bodies[i].InverseBodyInertiaTensor *
+                  Transpose(Source.Orientation);
+
+          Target.InverseWorldInertiaTensor = Target.Orientation *
+                  bodies[i].InverseBodyInertiaTensor *
+                  Transpose(Target.Orientation);
+	  }
 }
 
 
@@ -355,7 +360,8 @@ void dynamic_world::Integrate( real DeltaTime )
 
 dynamic_world::collision_state dynamic_world::CheckForWallCollisions( int state )
 {
-    float const DepthEpsilon = Epsilon*100.0f;//0.001f;
+  
+  float const DepthEpsilon = Epsilon*100.0f;//0.001f;
 
 	for(int WallIndex = 0;(WallIndex < 6);WallIndex++)
 	{
@@ -413,12 +419,37 @@ dynamic_world::collision_state dynamic_world::CheckForWallCollisions( int state 
 			}
       else if( Body.shape==SPHERE_SHAPE)
       {
-        vector3D Position = dynamicState.CMPosition;
-				vector3D R = Position - dynamicState.CMPosition;
+        vector3D sphereCMPos = dynamicState.CMPosition;
+        real penetration = Dot(sphereCMPos, Wall.Normal) + Wall.d - Body.radius;
 
-          //velocidad de cada vertice, velocidad del centro de masa + cross 
-					vector3D Velocity = dynamicState.CMVelocity +
-								CrossProduct(dynamicState.AngularVelocity,R);
+        if(penetration < DepthEpsilon)
+        {
+          vector3D colPos = sphereCMPos - ( Wall.Normal * ( Body.radius - penetration ) );
+          vector3D R = colPos - sphereCMPos;
+          vector3D Velocity = dynamicState.CMVelocity + CrossProduct(dynamicState.AngularVelocity, R);
+
+          real RelativeVelocity = Dot(Wall.Normal, Velocity);
+          if(RelativeVelocity < Epsilon)
+          {
+            CollisionState = Colliding;						
+							//prevent interpenetration with ground
+							if( walls[WallIndex].Normal.getZ() > 0.99f)
+								dynamicState.CMPosition-=penetration*walls[WallIndex].Normal; 
+            collision_pair* pair = new collision_pair;
+						if( pair)
+						{
+							pair->body1Index=BodyIndex;
+							pair->body2Index=-1;
+							pair->normal[0] = walls[WallIndex].Normal;
+							pair->point[0] = colPos;
+							pair->nPoints=1;
+							pair->wall_Index = WallIndex;
+						}
+						activePairs.push_back(pair);
+          }
+        }
+        
+
       }
 		}
 	}
@@ -519,7 +550,7 @@ void dynamic_world::ResolveCollisions( int dynamicStateIndex )
 
 			// apply impulse to primary quantities
 			dynamicState.CMVelocity += Body.getInvMass() * Impulse;
-			dynamicState.AngularMomentum += CrossProduct(R,Impulse);
+			dynamicState.AngularMomentum += CrossProduct(R, Impulse);
     
 			// compute affected auxiliary quantities
 			dynamicState.AngularVelocity = dynamicState.InverseWorldInertiaTensor *
