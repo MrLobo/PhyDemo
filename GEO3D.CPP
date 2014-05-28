@@ -509,6 +509,13 @@ bool SphereTestBox(const vector3D& center, const real radius, const Bbox& q)
 
 	return false;
 }
+
+bool sphereTestSphere(const vector3D& c1, const float r1, const vector3D& c2, const float r2, vector3D& colNormal)
+{
+  colNormal = c1 - c2;
+  return ( colNormal.squaredLength() < ( (r1 + r2) * (r1 + r2) ) );
+}
+
 bool boxTestBox(const Bbox& p, const Bbox& q)
 {
 // Separation-Axis theorem

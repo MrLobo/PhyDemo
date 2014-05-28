@@ -75,7 +75,7 @@ struct collision_pair
 real const WorldSize = r(9);
 const     int CurrentState=0;
 const     int TargetState=1;
-const     int NumberOfBodies = 3;
+const     int NumberOfBodies = 20;
 	
 class dynamic_world
 {

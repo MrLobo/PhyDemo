@@ -417,6 +417,7 @@ dynamic_world::collision_state dynamic_world::CheckForWallCollisions( int state 
 					}
 				}
 			}
+      //TODO: Sphere-Wall collision
       else if( Body.shape==SPHERE_SHAPE)
       {
         vector3D sphereCMPos = dynamicState.CMPosition;
@@ -461,48 +462,86 @@ dynamic_world::collision_state dynamic_world::CheckForInterCollisions( int state
 {
     for(int BodyIndex1 = 0;(BodyIndex1 < NumberOfBodies) ;BodyIndex1++)
     {
-        rigid_body &Body1 = bodies[BodyIndex1];
-        rigid_body::DynamicState &dynamicState1 =
-                Body1.dynamicState[state];
-		Bbox bbox1(dynamicState1.Orientation,dynamicState1.CMPosition,Body1.size);
-
+      rigid_body &Body1 = bodies[BodyIndex1];
+      rigid_body::DynamicState &dynamicState1 = Body1.dynamicState[state];
+		
 	    for(int BodyIndex2 = BodyIndex1 + 1 ;(BodyIndex2 < NumberOfBodies) ;BodyIndex2++)
-		{
-			rigid_body &Body2 = bodies[BodyIndex2];
-			rigid_body::DynamicState &dynamicState2 =
-					Body2.dynamicState[state];
-			Bbox bbox2(dynamicState2.Orientation,dynamicState2.CMPosition,Body2.size);
+		  {
+			  rigid_body &Body2 = bodies[BodyIndex2];
+			  rigid_body::DynamicState &dynamicState2 = Body2.dynamicState[state];
+			
+			  if( Body1.shape==BOX_SHAPE && Body2.shape==BOX_SHAPE)		
+			  {
+          Bbox bbox1(dynamicState1.Orientation,dynamicState1.CMPosition,Body1.size);
+          Bbox bbox2(dynamicState2.Orientation,dynamicState2.CMPosition,Body2.size);
 
-			if( Body1.shape==BOX_SHAPE && Body2.shape==BOX_SHAPE)		
-			{
-				//box detection
-				if( boxTestBox(bbox1, bbox2))
-				{
-					int nPoints=0;
-					vector3D col_point[16];
-					vector3D col_normal[16];
-					if( boxFindBox( bbox1, bbox2, col_point, col_normal, nPoints))
-					{
-						CollisionState = Colliding;
-						collision_pair* pair = new collision_pair;
-						if( pair)
-						{
-							pair->body1Index=BodyIndex1;
-							pair->body2Index=BodyIndex2;
-							int num = VALUE_MIN(nPoints, 16);
-							for( int j=0; j < num; j++)
-							{
-								pair->normal[j] = col_normal[j];
-								pair->point[j] = col_point[j];
-							}
-							pair->nPoints=nPoints;
-							pair->wall_Index = -1;
-						}
-						activePairs.push_back(pair);
-	//					currentRender->bDrawCollisionInfo=true;
-					}
-				}
-			}
+				  //box detection
+				  if( boxTestBox(bbox1, bbox2))
+				  {
+					  int nPoints=0;
+					  vector3D col_point[16];
+					  vector3D col_normal[16];
+					  if( boxFindBox( bbox1, bbox2, col_point, col_normal, nPoints))
+					  {
+						  CollisionState = Colliding;
+						  collision_pair* pair = new collision_pair;
+						  if( pair)
+						  {
+							  pair->body1Index=BodyIndex1;
+							  pair->body2Index=BodyIndex2;
+							  int num = VALUE_MIN(nPoints, 16);
+							  for( int j=0; j < num; j++)
+							  {
+								  pair->normal[j] = col_normal[j];
+								  pair->point[j] = col_point[j];
+							  }
+							  pair->nPoints=nPoints;
+							  pair->wall_Index = -1;
+						  }
+						  activePairs.push_back(pair);
+	  //					currentRender->bDrawCollisionInfo=true;
+					  }
+				  }
+			  }
+        //TODO: Sphere-Sphere collision
+			  if( Body1.shape==SPHERE_SHAPE && Body2.shape==SPHERE_SHAPE)		
+			  {
+				  //sphere col detection
+          const vector3D& sphere1Pos = dynamicState1.CMPosition;
+          const float& sphere1Radius = Body1.radius; 
+
+          const vector3D& sphere2Pos = dynamicState2.CMPosition;
+          const float& sphere2Radius = Body2.radius;
+
+          vector3D colNormal;
+				  if( sphereTestSphere(sphere1Pos, sphere1Radius, sphere2Pos, sphere2Radius, colNormal) )
+				  {
+            const vector3D& sphere1V = dynamicState1.CMVelocity;
+            const vector3D& sphere1W = dynamicState1.AngularVelocity;
+
+            const vector3D& sphere2V = dynamicState2.CMVelocity;
+            const vector3D& sphere2W = dynamicState2.AngularVelocity;
+
+            colNormal.normalize();
+            vector3D colPos = sphere2Pos + ( colNormal * sphere2Radius ) ;
+            vector3D R = colPos - sphere1Pos;
+            vector3D Velocity = sphere1V + CrossProduct(sphere1W, R);
+
+           // real RelativeVelocity = Dot(colNormal, Velocity);
+           // if(RelativeVelocity < Epsilon)
+            {
+              CollisionState = Colliding;
+						  collision_pair* pair = new collision_pair;
+							  pair->body1Index=BodyIndex1;
+							  pair->body2Index=BodyIndex2;
+								pair->normal[0] = colNormal;
+								pair->point[0] = colPos;
+							  pair->nPoints=1;
+							  pair->wall_Index = -1;
+						  activePairs.push_back(pair);
+            }
+				  }
+			  }
 		}
 	}
 	return CollisionState;

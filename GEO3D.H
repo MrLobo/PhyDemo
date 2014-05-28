@@ -183,6 +183,7 @@ struct Bbox
 };
 void box2vertex(const Bbox& _box, vector3D* vertexList);
 bool SphereTestBox(const vector3D& center, const real radius, const Bbox& q);
+bool sphereTestSphere(const vector3D& c1, const float r1, const vector3D& c2, const float r2, vector3D& colNormal);
 bool boxTestBox(const Bbox& p, const Bbox& q);
 bool boxFindBox(const Bbox& p, const Bbox& q, 
 	vector3D* col_point, vector3D* col_normal, int& nPoints);
