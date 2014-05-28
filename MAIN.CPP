@@ -59,8 +59,8 @@ void Execute( float zoom,  float height, float angle )
 
     static real LastTime = GetTime();
 
-//#define FIXEDTIMESTEP 1
-    real const MaxTimeStep = r(0.01);
+#define FIXEDTIMESTEP 0
+    real const MaxTimeStep = r(0.007);
     
 #if FIXEDTIMESTEP
     real Time = LastTime + MaxTimeStep;
@@ -76,7 +76,7 @@ void Execute( float zoom,  float height, float angle )
             DeltaTime = MaxTimeStep;
         }
         
-        pWorld->Simulate(DeltaTime);
+        pWorld->Step(DeltaTime);
         LastTime += DeltaTime;
     }
     LastTime = Time;

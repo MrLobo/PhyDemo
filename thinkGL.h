@@ -6,6 +6,8 @@
 struct thkTransform
 {
 	float aM[16];
+	float radius;
+	float color[3];
 };
 struct thkline
 {
@@ -23,21 +25,24 @@ struct thkPoint
 class thinkGL
 {
 private:
-	std::vector< thkTransform > objTransform;	
+	std::vector< thkTransform > boxTransform;	
+	std::vector< thkTransform > sphereTransform;	
 	std::vector< thkline > drawLines;	
 
 public:
 	float glWorldSize;
 	bool bDrawCollisionInfo;
 
-	bool Init( unsigned int width, unsigned int height);
+	bool Init( double width, double height);
 	void StoreBox( int index, float* color, float sx,float sy,float sz);
-  void Render( void );
+    void Render( void );
 	void clearView( float zoom,  float height, float angle);
 	void printGLtext(int x, int y, char* String, int size);
 
-	void addTransform(thkTransform& trs){ objTransform.push_back(trs);}
-	void clearTransformList(){ objTransform.clear();}
+	void addBoxTransform(thkTransform& trs){ boxTransform.push_back(trs);}
+	void addSphereTransform(thkTransform& trs){ sphereTransform.push_back(trs);}
+	void clearBoxTransformList(){ boxTransform.clear();}
+	void clearSphereTransformList(){ sphereTransform.clear();}
 	void clearLinesList(){ drawLines.clear();}
 	void clearDrawInfo();
 	void setWordlSize(float size){ glWorldSize=size;}
@@ -48,8 +53,8 @@ public:
 		line.color[0]=color[0];line.color[1]=color[1];line.color[2]=color[2];
 		drawLines.push_back(line);
 	}
-	thinkGL(){bDrawCollisionInfo=false;glWorldSize=0.0; objTransform.clear();}
-	~thinkGL(){ objTransform.clear();}
+	thinkGL(){bDrawCollisionInfo=false;glWorldSize=0.0; boxTransform.clear();sphereTransform.clear();}
+	~thinkGL(){ boxTransform.clear();sphereTransform.clear();}
 };
 
 

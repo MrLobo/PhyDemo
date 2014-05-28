@@ -493,7 +493,22 @@ real sqrDistanceSegs(const vector3D& p0, const vector3D& p1,
     return fabs(fSqrDist);
 }
 
+bool SphereTestBox(const vector3D& center, const real radius, const Bbox& q)
+{
+	real dotX = Dot( center - q.center, q.getXaxis());
+	real dotY = Dot( center - q.center, q.getYaxis());
+	real dotZ = Dot( center - q.center, q.getZaxis());
 
+	real distX = q.size.getX() + ColMargin + radius - fabs(dotX);
+	real distY = q.size.getY() + ColMargin + radius - fabs(dotY);
+	real distZ = q.size.getZ() + ColMargin + radius - fabs(dotZ);
+	if( distX  > Epsilon && distY > Epsilon && distZ  > Epsilon)
+	{
+		return true;
+	}
+
+	return false;
+}
 bool boxTestBox(const Bbox& p, const Bbox& q)
 {
 // Separation-Axis theorem
@@ -676,7 +691,7 @@ bool boxTestBox(const Bbox& p, const Bbox& q)
 }
 
 void box2vertex(const Bbox& _box, vector3D* vertexList)
-{
+{	
   static vector3D sizeX;
   static vector3D sizeY;
   static vector3D sizeZ;

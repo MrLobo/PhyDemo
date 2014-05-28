@@ -1,5 +1,7 @@
 /*----------------------------------------------------------------------------
+
 3D Physics Demo By Carlos Pegar
+
 */
 
 #if !defined(_GEO3D_H_)
@@ -27,7 +29,7 @@ real const REAL_MIN = FLT_MIN;
 
 real const PI = r(3.14159265358979323846);
 real const Epsilon = r(0.00001);
-real const ColMargin = Epsilon * 1000.0f;
+real const ColMargin = Epsilon*1000.0f;
 
 #define VALUE_MIN(a,b) (((a) > (b))?(b):(a))
 #define VALUE_MAX(a,b) (((a) > (b))?(a):(b))
@@ -48,32 +50,30 @@ public:
     inline vector3D &operator-=(vector3D const &lessor);
     inline vector3D &operator*=(real const multiplier);
     inline vector3D &operator/=(real const divisor);
-    
     inline real &operator()( int unsigned Index )
-	  {   
-		  assert(Index < 3);
-		  return element[Index];
-	  }
+	{   
+		assert(Index < 3);
+		return element[Index];
+	}
 
     inline real const &operator()( int unsigned Index ) const
-	  {   
-		  assert(Index < 3);
-		  return element[Index];
-	  }
-
+	{   
+		assert(Index < 3);
+		return element[Index];
+	}
     inline void set( int Index, real Value )
-	  {
-		  assert(Index< 3);
-	      element[Index] = Value;
-	  }
+	{
+		assert(Index< 3);
+	    element[Index] = Value;
+	}
 
     real const *getArray( void ) const { return element; };
 
-	  inline real getX( void ) const{ return element[0];}
+	inline real getX( void ) const{ return element[0];}
     inline real getY( void ) const{ return element[1];}
     inline real getZ( void ) const{ return element[2];}
 
-	  inline void setX( real value ){ element[0]=value;}
+	inline void setX( real value ){ element[0]=value;}
     inline void setY( real value ){ element[1]=value;}
     inline void setZ( real value ){ element[2]=value;}
 
@@ -99,7 +99,7 @@ public:
     
     inline matrix3D &operator+=( matrix3D const &M );
 
-	  void setIdentity();
+	void setIdentity();
     inline real &operator()( int unsigned Row, int unsigned Column );
     inline real const &operator()( int unsigned Row, int unsigned Column ) const;
 
@@ -158,21 +158,19 @@ struct poly_edge
 	int  i0,i1;
 	int  f0,f1;
 };
-
 struct Bbox  
 {
-  vector3D center;
-  matrix3D orientation;
-  vector3D size;
-  real radio;
+    vector3D center;
+    matrix3D orientation;
+    vector3D size;
+    real radio;
 
-  vector3D getXaxis()const{ return vector3D( orientation(0,0),orientation(1,0),orientation(2,0));}
-  vector3D getYaxis()const{ return vector3D( orientation(0,1),orientation(1,1),orientation(2,1));}
-  vector3D getZaxis()const{ return vector3D( orientation(0,2),orientation(1,2),orientation(2,2));}
+    vector3D getXaxis()const{ return vector3D( orientation(0,0),orientation(1,0),orientation(2,0));}
+    vector3D getYaxis()const{ return vector3D( orientation(0,1),orientation(1,1),orientation(2,1));}
+    vector3D getZaxis()const{ return vector3D( orientation(0,2),orientation(1,2),orientation(2,2));}
 
-  Bbox() {};
-
-	Bbox(const matrix3D& O, const vector3D& p, const vector3D& s)
+    Bbox(){};
+	Bbox(matrix3D O,vector3D p,vector3D s)
 	{
 		for(int i=0; i < 3; i++)
 			for(int j=0; j < 3;j++)
@@ -183,9 +181,11 @@ struct Bbox
 	}
 
 };
-
+void box2vertex(const Bbox& _box, vector3D* vertexList);
+bool SphereTestBox(const vector3D& center, const real radius, const Bbox& q);
 bool boxTestBox(const Bbox& p, const Bbox& q);
-bool boxFindBox(const Bbox& p, const Bbox& q, vector3D* col_point, vector3D* col_normal, int& nPoints);
+bool boxFindBox(const Bbox& p, const Bbox& q, 
+	vector3D* col_point, vector3D* col_normal, int& nPoints);
 
 /*----------------------------------------------------------------------------
 

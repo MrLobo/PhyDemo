@@ -81,7 +81,6 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>winmm.lib;opengl32.lib;glu32.lib;glut32.lib;thinkGlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\Glut;$(SolutionDir)\Release</AdditionalLibraryDirectories>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -93,7 +92,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\GEO3D.H" />
     <ClInclude Include="..\..\PHYSICS3D.H" />
-    <ClInclude Include="..\..\RIGIDBODY.H" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\PHYSICS.ICO" />

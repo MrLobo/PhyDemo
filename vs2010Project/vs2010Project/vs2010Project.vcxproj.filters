@@ -18,13 +18,13 @@
     <ClCompile Include="..\..\GEO3D.CPP">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\PHYSICS3D.CPP">
-      <Filter>Archivos de código fuente</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\WINSYS.CPP">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
     <ClCompile Include="..\..\MAIN.CPP">
+      <Filter>Archivos de código fuente</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\PHYSICS3D.CPP">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
   </ItemGroup>
